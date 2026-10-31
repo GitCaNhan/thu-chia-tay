@@ -80,6 +80,7 @@ const DB_SERVICE = {
 
   // Xóa một bức thư theo ID
   async deleteLetter(id) {
+    this.removeMySentLetter(id);
     if (this.isFirebaseActive && this.firestore) {
       try {
         await this.firestore.collection("letters").doc(id).delete();
@@ -93,6 +94,29 @@ const DB_SERVICE = {
       this.removeFromLocalList(id);
       return { success: true };
     }
+  },
+
+  // Quản lý các bức thư do chính thiết bị này gửi (Không cần đăng nhập!)
+  getMySentLetters() {
+    try {
+      const data = localStorage.getItem("cta_my_sent_letters");
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      return [];
+    }
+  },
+
+  saveMySentLetter(letterRecord) {
+    const list = this.getMySentLetters();
+    // Đưa thư mới lên đầu
+    list.unshift(letterRecord);
+    localStorage.setItem("cta_my_sent_letters", JSON.stringify(list));
+  },
+
+  removeMySentLetter(id) {
+    let list = this.getMySentLetters();
+    list = list.filter(item => item.id !== id);
+    localStorage.setItem("cta_my_sent_letters", JSON.stringify(list));
   },
 
   removeFromLocalList(id) {

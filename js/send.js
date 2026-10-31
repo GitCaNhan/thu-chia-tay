@@ -41,6 +41,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const successModal = document.getElementById('successModal');
   const btnWriteAnother = document.getElementById('btnWriteAnother');
   const btnDeleteJustSent = document.getElementById('btnDeleteJustSent');
+  const mySentLettersSection = document.getElementById('mySentLettersSection');
+  const mySentLettersList = document.getElementById('mySentLettersList');
   let lastSavedLetterId = null;
 
   // 3. Khởi tạo danh sách Giáo họ / Giáo xứ
@@ -131,8 +133,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function setUserImage(img) {
     userImg = img;
-    // Tự động scale sao cho ảnh vừa khít hoặc hơi tràn nhẹ khung
-    const maxDim = Math.max(img.width, img.height);
     const minDim = Math.min(img.width, img.height);
     imgState.scale = CANVAS_SIZE / minDim;
     imgState.x = 0;
@@ -166,7 +166,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Chụp ảnh trực tiếp từ Camera
   btnCamera.addEventListener('click', async () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      // Fallback nếu trình duyệt không hỗ trợ getUserMedia: mở input capture
       fileInput.setAttribute('capture', 'environment');
       fileInput.click();
       return;
@@ -334,7 +333,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadingOverlay.classList.add('active');
 
     try {
-      // Xuất ảnh kèm khung từ Canvas (chất lượng JPEG 0.85 tối ưu)
       let photoData = "";
       if (userImg) {
         photoData = previewCanvas.toDataURL('image/jpeg', 0.85);
@@ -355,6 +353,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       if (res && res.success) {
         lastSavedLetterId = res.id;
+        // Lưu vào thiết bị này để người viết có thể xem lại hoặc xóa (Không cần đăng nhập!)
+        window.DB_SERVICE.saveMySentLetter({
+          id: res.id,
+          saintName: letterRecord.saintName,
+          fullName: letterRecord.fullName,
+          parish: letterRecord.parish,
+          content: letterRecord.content,
+          createdAt: new Date().toISOString()
+        });
+        renderMySentLetters();
         successModal.classList.add('active');
       } else {
         showToast("Có lỗi xảy ra khi lưu thư, vui lòng thử lại!");
@@ -366,13 +374,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Xóa bức thư vừa gửi nếu gửi nhầm
+  // Xóa bức thư vừa gửi nếu gửi nhầm từ popup thông báo
   if (btnDeleteJustSent) {
     btnDeleteJustSent.addEventListener('click', async () => {
       if (!lastSavedLetterId) return;
       if (confirm("Bạn có chắc chắn muốn xóa bức thư vừa gửi không?")) {
         loadingOverlay.classList.add('active');
         await window.DB_SERVICE.deleteLetter(lastSavedLetterId);
+        renderMySentLetters();
         loadingOverlay.classList.remove('active');
         lastSavedLetterId = null;
         successModal.classList.remove('active');
@@ -380,6 +389,60 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   }
+
+  // Quản lý hiển thị và xóa các bức thư do chính thiết bị này gửi (Không cần đăng nhập)
+  function renderMySentLetters() {
+    if (!mySentLettersSection || !mySentLettersList) return;
+    const myLetters = window.DB_SERVICE.getMySentLetters();
+
+    if (!myLetters || myLetters.length === 0) {
+      mySentLettersSection.style.display = 'none';
+      mySentLettersList.innerHTML = '';
+      return;
+    }
+
+    mySentLettersSection.style.display = 'block';
+    mySentLettersList.innerHTML = '';
+
+    myLetters.forEach(letter => {
+      const card = document.createElement('div');
+      card.className = 'my-sent-card';
+      card.dataset.id = letter.id;
+
+      const senderDisplay = (letter.saintName ? letter.saintName + ' ' : '') + (letter.fullName || 'Ẩn danh');
+      const timeStr = formatDate(letter.createdAt);
+
+      card.innerHTML = `
+        <div class="my-sent-info">
+          <div class="my-sent-meta">
+            <span class="my-sent-sender-name">${escapeHtml(senderDisplay)}</span>
+            <span class="my-sent-parish-tag">⛪ ${escapeHtml(letter.parish || 'Giáo xứ')}</span>
+          </div>
+          <div class="my-sent-snippet">"${escapeHtml(letter.content || '')}"</div>
+          <div class="my-sent-time">🕒 Gửi lúc: ${timeStr}</div>
+        </div>
+        <button type="button" class="btn-delete-my-letter" title="Xóa bức thư này">
+          <span>🗑️</span> Xóa thư
+        </button>
+      `;
+
+      const btnDelete = card.querySelector('.btn-delete-my-letter');
+      btnDelete.addEventListener('click', async () => {
+        if (confirm(`Bạn có chắc chắn muốn xóa bức thư này không? Bức thư sẽ bị gỡ bỏ vĩnh viễn khỏi hòm thư của Cha.`)) {
+          loadingOverlay.classList.add('active');
+          await window.DB_SERVICE.deleteLetter(letter.id);
+          loadingOverlay.classList.remove('active');
+          renderMySentLetters();
+          showToast("Đã xóa bức thư thành công!");
+        }
+      });
+
+      mySentLettersList.appendChild(card);
+    });
+  }
+
+  // Khởi chạy hiển thị danh sách thư đã gửi trên máy này khi vào trang
+  renderMySentLetters();
 
   // Viết thư khác
   btnWriteAnother.addEventListener('click', () => {
@@ -411,5 +474,33 @@ document.addEventListener('DOMContentLoaded', async () => {
       toast.classList.remove('show');
     }, 3200);
   }
-});
 
+  // Helper định dạng ngày giờ
+  function formatDate(isoStr) {
+    if (!isoStr) return '';
+    try {
+      const d = new Date(isoStr);
+      const hours = String(d.getHours()).padStart(2, '0');
+      const mins = String(d.getMinutes()).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${hours}:${mins} - ${day}/${month}/${year}`;
+    } catch (e) {
+      return isoStr;
+    }
+  }
+
+  // Helper bảo vệ HTML
+  function escapeHtml(str) {
+    return (str || '').replace(/[&<>'"]/g, 
+      tag => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+      }[tag] || tag)
+    );
+  }
+});

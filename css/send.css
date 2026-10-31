@@ -488,3 +488,136 @@
   }
 }
 
+/* ==========================================================================
+   KHU VỰC THƯ ĐÃ GỬI TRÊN THIẾT BỊ NÀY (KHÔNG CẦN ĐĂNG NHẬP)
+   ========================================================================== */
+
+.my-sent-section {
+  margin-top: 28px;
+  padding: 26px 30px;
+}
+
+.my-sent-title {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  color: var(--wood-medium);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.my-sent-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
+.my-sent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.my-sent-card {
+  background: #ffffff;
+  border: 1.5px solid #e3d2b8;
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+.my-sent-card:hover {
+  border-color: var(--primary-gold);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15);
+}
+
+.my-sent-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.my-sent-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--gold-dark);
+  font-weight: 700;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+.my-sent-sender-name {
+  color: var(--wood-medium);
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+}
+
+.my-sent-parish-tag {
+  background: #fbf7ee;
+  border: 1px solid #e8dac5;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  color: #634b39;
+}
+
+.my-sent-snippet {
+  font-size: 0.95rem;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.my-sent-time {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.btn-delete-my-letter {
+  background: rgba(192, 57, 43, 0.08);
+  color: #c0392b;
+  border: 1.5px solid rgba(192, 57, 43, 0.4);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.btn-delete-my-letter:hover {
+  background: #c0392b;
+  color: #ffffff;
+  border-color: #c0392b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(192, 57, 43, 0.25);
+}
+
+@media (max-width: 600px) {
+  .my-sent-section {
+    padding: 20px 16px;
+  }
+  .my-sent-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .btn-delete-my-letter {
+    align-self: flex-end;
+  }
+}
+
