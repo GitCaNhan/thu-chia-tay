@@ -1,0 +1,13 @@
+# Hệ điều hành
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Trình soạn thảo
+.vscode/
+.idea/
+
+# File tạm
+*.tmp
+*.log
+

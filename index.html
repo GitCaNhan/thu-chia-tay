@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Gửi Lời Tri Ân & Chúc Mừng Cha Phụ Tá Thái</title>
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/send.css">
+</head>
+<body>
+  <!-- Lớp phủ dịu nền -->
+  <div class="bg-overlay"></div>
+
+  <div class="main-wrapper">
+    <!-- Tiêu đề trang -->
+    <header class="header-box">
+      <div class="holy-cross">✝</div>
+      <h1 class="header-title">Lời Tri Ân & Tình Cảm</h1>
+    </header>
+
+    <!-- Thẻ điền thông tin và viết thư -->
+    <main class="parchment-card letter-form-container">
+      <form id="letterForm" autocomplete="off">
+        <div class="form-grid">
+          <!-- Tên Thánh -->
+          <div class="form-group">
+            <label class="form-label" for="saintName">
+              <span>Tên Thánh</span>
+              <span class="label-hint">(nếu có)</span>
+            </label>
+            <input 
+              type="text" 
+              id="saintName" 
+              class="input-styled" 
+              placeholder="Ví dụ: Giuse, Maria, Phêrô..." 
+            />
+          </div>
+
+          <!-- Tên đệm và Tên -->
+          <div class="form-group">
+            <label class="form-label" for="fullName">
+              <span>Tên đệm và tên</span>
+              <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="fullName" 
+              class="input-styled" 
+              placeholder="Ví dụ: Nguyễn Văn An" 
+              required 
+            />
+          </div>
+
+          <!-- Giáo họ / Giáo xứ -->
+          <div class="form-group full-width">
+            <label class="form-label" for="parishSelect">
+              <span>Giáo họ / Giáo xứ</span>
+              <span class="required">*</span>
+            </label>
+            <select id="parishSelect" class="select-styled" required>
+              <!-- JS tự động điền danh sách theo yêu cầu -->
+            </select>
+
+            <!-- Ô nhập khi chọn "Khác" -->
+            <div id="otherParishGroup" class="other-parish-group" style="display: none;">
+              <input 
+                type="text" 
+                id="otherParishInput" 
+                class="input-styled" 
+                placeholder="Nhập tên Giáo họ hoặc Giáo xứ của bạn..." 
+              />
+            </div>
+          </div>
+
+          <!-- Phần viết thư -->
+          <div class="form-group full-width">
+            <label class="form-label" for="letterContent">
+              <span>Nội dung bức thư gửi Cha</span>
+              <span class="required">*</span>
+            </label>
+            <div class="letter-textarea-wrapper">
+              <textarea 
+                id="letterContent" 
+                class="textarea-styled" 
+                placeholder="Kính thưa Cha Thái, chúng con xin gửi đến Cha những lời chúc, kỷ niệm và tâm tình tri ân sâu sắc..." 
+                required
+              ></textarea>
+            </div>
+            <div id="charCounter" class="char-counter">0 ký tự</div>
+          </div>
+        </div>
+
+        <!-- Phần Chụp ảnh và Tải ảnh lồng khung -->
+        <section class="photo-section">
+          <h3 class="photo-section-title">
+            <span>📷</span> Chụp hoặc tải ảnh kỷ niệm cùng Cha
+          </h3>
+          <p class="photo-desc">
+            Ảnh của bạn sẽ tự động được lồng vào khung lưu niệm trang trọng và hiển thị cạnh bức thư để Cha thưởng lãm.
+          </p>
+
+          <!-- Nút hành động chụp / tải -->
+          <div class="photo-actions">
+            <button type="button" id="btnCamera" class="btn-photo-action">
+              <span>📸</span> Chụp ảnh ngay
+            </button>
+            <button type="button" id="btnUpload" class="btn-photo-action">
+              <span>🖼️</span> Tải ảnh từ điện thoại / máy tính
+            </button>
+            <input type="file" id="fileInput" accept="image/*" style="display: none;" />
+          </div>
+
+          <!-- Khung Canvas tương tác -->
+          <div class="frame-preview-container">
+            <div class="frame-canvas-wrapper">
+              <canvas id="previewCanvas"></canvas>
+            </div>
+
+            <!-- Công cụ chỉnh góc & thu phóng ảnh trong khung -->
+            <div id="canvasControls" class="canvas-controls" style="display: none;">
+              <button type="button" id="btnZoomIn" class="control-btn" title="Phóng to">➕</button>
+              <button type="button" id="btnZoomOut" class="control-btn" title="Thu nhỏ">➖</button>
+              <button type="button" id="btnRotate" class="control-btn" title="Xoay ảnh 90°">🔄</button>
+              <button type="button" id="btnResetPhoto" class="control-btn" title="Gỡ ảnh">🗑️</button>
+            </div>
+            <div id="canvasHint" class="canvas-hint" style="display: none;">
+              💡 Dùng ngón tay hoặc chuột để kéo di chuyển ảnh cho vừa vặn nhất trong khung.
+            </div>
+          </div>
+        </section>
+
+        <!-- Nút gửi thư -->
+        <div class="submit-wrapper">
+          <button type="submit" class="btn-gold btn-submit-letter">
+            <span>✉️</span> GỬI BỨC THƯ ĐẾN CHA THÁI
+          </button>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <!-- Modal Camera Chụp trực tiếp -->
+  <div id="cameraModal" class="camera-modal">
+    <div class="camera-view-wrapper">
+      <video id="cameraVideo" autoplay playsinline></video>
+      <div class="camera-frame-guide"></div>
+    </div>
+    <div class="camera-controls">
+      <button type="button" id="btnCloseCamera" class="btn-close-camera">Đóng</button>
+      <button type="button" id="btnSnap" class="btn-snap" title="Bấm chụp"></button>
+    </div>
+  </div>
+
+  <!-- Modal Thành Công -->
+  <div id="successModal" class="modal-overlay">
+    <div class="success-card">
+      <div class="success-icon">🕊️</div>
+      <h2 class="success-title">Thư Đã Được Gửi Thành Công!</h2>
+      <p class="success-msg">
+        Cảm tạ tấm lòng và những lời chúc yêu thương của bạn dành cho Cha phụ tá Thái. Bức thư và bức ảnh kỷ niệm đã được trân trọng lưu giữ để trao gửi tới Cha.
+      </p>
+      <div class="success-actions">
+        <button type="button" id="btnWriteAnother" class="btn-gold">
+          ✍️ Viết thêm thư khác
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay Đang gửi -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner"></div>
+    <p>Đang gửi tâm tình của bạn đến Cha Thái...</p>
+  </div>
+
+  <!-- Firebase SDK (Compat v10 để chạy trên static HTML thuần không cần build tool) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <!-- Application Scripts -->
+  <script src="config.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/send.js"></script>
+</body>
+</html>
+

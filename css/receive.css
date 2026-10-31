@@ -1,0 +1,775 @@
+/* ==========================================================================
+   STYLES: TRANG 2 - ĐỌC THƯ DÀNH RIÊNG CHO CHA PHỤ TÁ THÁI
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. ĐĨA PHÁT NHẠC (TURNTABLE / RECORD PLAYER) & MINI PLAYER
+   -------------------------------------------------------------------------- */
+
+.intro-turntable-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at center, rgba(38, 22, 12, 0.94) 0%, rgba(12, 6, 3, 0.98) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+  padding: 20px;
+}
+
+.intro-turntable-overlay.dismissed {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.turntable-intro-box {
+  text-align: center;
+  max-width: 520px;
+  width: 100%;
+  animation: introFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@keyframes introFadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Thân máy đĩa than chính */
+.turntable-body {
+  position: relative;
+  width: 340px;
+  height: 340px;
+  margin: 0 auto 28px;
+  background: radial-gradient(circle, #2b1b11 0%, #150c07 100%);
+  border: 4px solid var(--primary-gold);
+  border-radius: 36px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(212, 175, 55, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.turntable-body:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 45px rgba(212, 175, 55, 0.45);
+}
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+/* Mâm xoay kim loại */
+.turntable-platter {
+  position: relative;
+  width: 270px;
+  height: 270px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #3a3a3a 0%, #1a1a1a 70%, #0a0a0a 100%);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.7), inset 0 0 10px rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Đĩa than xoay */
+.vinyl-disc {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background-image: url('../assets/images/vinyl.png');
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 15px rgba(0,0,0,0.9);
+  transition: transform 0.5s ease;
+}
+
+.vinyl-disc.spinning {
+  animation: spinRecord 3s linear infinite;
+}
+
+@keyframes spinRecord {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Cần gạt phát nhạc (Tonearm) */
+.tonearm-wrapper {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 90px;
+  height: 250px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.tonearm-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* Điểm xoay chuẩn: X=56.2%, Y=24.1% */
+  transform-origin: 56.2% 24.1%;
+  transform: rotate(-32deg);
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(4px 4px 8px rgba(0, 0, 0, 0.6));
+}
+
+.tonearm-img.playing {
+  transform: rotate(-6deg);
+}
+
+/* Nút bắt đầu nghe nhạc (Dấu chạy nhạc ▶) */
+.btn-play-turntable-circle {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: var(--gold-gradient);
+  border: 3.5px solid #fff4c6;
+  color: #2b180a;
+  font-size: 2rem;
+  cursor: pointer;
+  box-shadow: 0 0 35px rgba(212, 175, 55, 0.75), 0 10px 25px rgba(0, 0, 0, 0.6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: playGlowPulse 2.2s infinite ease-in-out;
+  outline: none;
+}
+
+.btn-play-turntable-circle .play-icon-triangle {
+  margin-left: 5px; /* Căn giữa quang học tam giác Play */
+  line-height: 1;
+}
+
+.btn-play-turntable-circle:hover {
+  transform: scale(1.12);
+  border-color: #ffffff;
+  box-shadow: 0 0 45px rgba(255, 230, 130, 0.95), 0 12px 30px rgba(0, 0, 0, 0.7);
+}
+
+.btn-play-turntable-circle:active {
+  transform: scale(0.95);
+}
+
+@keyframes playGlowPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.6), 0 8px 20px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 0 45px rgba(255, 230, 130, 0.9), 0 12px 28px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* MINI PLAYER Ở GÓC TRÊN BÊN PHẢI SAU KHI THU NHỎ */
+.mini-player {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+  background: rgba(28, 16, 9, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid var(--primary-gold);
+  border-radius: var(--radius-full);
+  padding: 8px 16px 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(212, 175, 55, 0.25);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  max-width: 290px;
+}
+
+.mini-player:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+.mini-vinyl {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-image: url('../assets/images/vinyl.png');
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+.mini-vinyl.spinning {
+  animation: spinRecord 2.5s linear infinite;
+}
+
+.mini-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mini-title {
+  color: #fff5db;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.mini-status {
+  color: var(--primary-gold);
+  font-size: 0.72rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mini-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.btn-mini-toggle {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  color: var(--primary-gold);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.85rem;
+}
+
+.btn-mini-toggle:hover {
+  background: var(--gold-gradient);
+  color: #2b180a;
+}
+
+/* --------------------------------------------------------------------------
+   2. HIỆU ỨNG MƯA STICKER (KHÔNG XOAY STICKER THEO YÊU CẦU)
+   -------------------------------------------------------------------------- */
+
+#stickerRainContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.falling-sticker {
+  position: absolute;
+  top: -120px;
+  pointer-events: none;
+  user-select: none;
+  /* QUY TẮC CỦA USER: KHÔNG XOAY STICKER */
+  transform: rotate(0deg) !important;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
+}
+
+/* --------------------------------------------------------------------------
+   3. DANH SÁCH THƯ CỦA MỌI NGƯỜI GỬI (GỬI TRƯỚC HIỆN TRƯỚC)
+   -------------------------------------------------------------------------- */
+
+.letters-dashboard {
+  margin-top: 10px;
+}
+
+/* Thanh thông tin số lượng thư */
+.mailbox-center-toolbar {
+  background: rgba(35, 22, 14, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(212, 175, 55, 0.4);
+  border-radius: var(--radius-full);
+  padding: 10px 24px;
+  margin: 0 auto 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 320px;
+  box-shadow: var(--shadow-warm);
+}
+
+.letter-counter-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff8e8;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.counter-num {
+  background: var(--gold-gradient);
+  color: #2b180a;
+  padding: 2px 12px;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 1.05rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Grid danh sách phong thư */
+.letters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 24px;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+/* THẺ PHONG BÌ THƯ (CHỈ HIỆN HÌNH BỨC THƯ ĐÓNG HOẶC MỞ) */
+.envelope-card {
+  position: relative;
+  background: rgba(32, 18, 10, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(212, 175, 55, 0.35);
+  border-radius: var(--radius-md);
+  padding: 16px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  user-select: none;
+  outline: none;
+}
+
+.envelope-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: var(--primary-gold);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 25px rgba(212, 175, 55, 0.4);
+}
+
+.envelope-card:focus-visible {
+  border-color: #ffd700;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.5);
+}
+
+.envelope-card:active {
+  transform: translateY(-2px) scale(0.99);
+}
+
+.envelope-card-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.envelope-number-badge {
+  background: var(--gold-gradient);
+  color: #2b180a;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.envelope-status-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.envelope-status-badge.unread {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: #fff;
+  border: 1px solid #ff7675;
+  box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+  animation: sealPulse 2.5s infinite;
+}
+
+@keyframes sealPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(231, 76, 60, 0.4); }
+  50% { box-shadow: 0 0 18px rgba(231, 76, 60, 0.85); }
+}
+
+.envelope-status-badge.opened {
+  background: rgba(255, 255, 255, 0.15);
+  color: #d1bda9;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.envelope-visual-box {
+  width: 100%;
+  max-width: 210px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.envelope-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+  transition: transform 0.3s ease;
+}
+
+.envelope-card:hover .envelope-svg {
+  transform: scale(1.04);
+}
+
+.envelope-action-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #f7e6ca;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  transition: color 0.2s;
+}
+
+.envelope-card:hover .envelope-action-text {
+  color: var(--gold-glow);
+}
+
+/* --------------------------------------------------------------------------
+   4. MODAL ĐỌC THƯ (CHỮ VIẾT HOA CÁCH ĐIỆU + ẢNH KÈM KHUNG)
+   -------------------------------------------------------------------------- */
+
+.letter-reading-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(12, 7, 3, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 20000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+  overflow-y: auto;
+}
+
+.letter-reading-modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Trang giấy thư mở rộng */
+.reading-sheet {
+  background: var(--parchment-bg);
+  border: 3px solid var(--primary-gold);
+  border-radius: var(--radius-lg);
+  max-width: 860px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-warm), 0 0 40px rgba(212, 175, 55, 0.3);
+  position: relative;
+  animation: sheetOpen 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+@keyframes sheetOpen {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Đầu thư */
+.reading-header {
+  background: linear-gradient(180deg, #fbf5e6 0%, var(--parchment-bg) 100%);
+  padding: 20px 28px 16px;
+  border-bottom: 1.5px dashed rgba(184, 150, 94, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.reading-sender-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.reading-saint-name {
+  color: var(--gold-dark);
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.reading-full-name {
+  font-family: var(--font-serif);
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--wood-medium);
+}
+
+.reading-parish-tag {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* NÚT THOÁT CHUYỂN RA NGOÀI */
+.btn-exit-letter {
+  background: #3b2518;
+  color: #fff8e8;
+  border: 1px solid var(--primary-gold);
+  padding: 9px 20px;
+  border-radius: var(--radius-full);
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+.btn-exit-letter:hover {
+  background: #5a3a26;
+  border-color: #ffd460;
+  transform: translateY(-1px);
+}
+
+/* Thân nội dung bức thư (Bao gồm Bức thư & Ảnh kèm khung bên cạnh) */
+.reading-body-layout {
+  padding: 28px 32px;
+  overflow-y: auto;
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+/* CỘT TRÁI HOẶC PHẢI: BỨC THƯ VỚI FONT CHỮ VIẾT HOA CÁCH ĐIỆU */
+.reading-letter-text-box {
+  flex: 1;
+  min-width: 0;
+}
+
+.reading-salutation {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-style: italic;
+  color: var(--wood-medium);
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+/* FONT CHỮ VIẾT HOA CÁCH ĐIỆU ĐÚNG THEO YÊU CẦU */
+.reading-letter-content {
+  font-family: var(--font-letter);
+  font-size: 1.45rem;
+  line-height: 1.9;
+  color: #2b1a10;
+  white-space: pre-line;
+  letter-spacing: 0.3px;
+  /* Viết hoa cách điệu nghệ thuật */
+  text-transform: capitalize;
+}
+
+.reading-letter-content::first-letter {
+  font-size: 2.8rem;
+  float: left;
+  line-height: 0.8;
+  padding-right: 8px;
+  padding-top: 4px;
+  color: var(--gold-dark);
+  font-family: var(--font-serif);
+  font-weight: 700;
+}
+
+.reading-date-signature {
+  margin-top: 32px;
+  text-align: right;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* CỘT BÊN CẠNH: ẢNH KÈM KHUNG */
+.reading-photo-side-box {
+  width: 280px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fbf6ec;
+  border: 1px solid #ebd9c2;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+.framed-photo-wrapper {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  cursor: pointer;
+  background: #25160e;
+  transition: transform 0.25s ease;
+}
+
+.framed-photo-wrapper:hover {
+  transform: scale(1.02);
+}
+
+.framed-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* NÚT / DÒNG CHỮ PHÍA BÊN DƯỚI ẢNH: "NHẤN ĐỂ XEM ẢNH" */
+.btn-view-photo-full {
+  margin-top: 14px;
+  background: #ffffff;
+  color: var(--wood-medium);
+  border: 1.5px solid var(--primary-gold);
+  border-radius: var(--radius-full);
+  padding: 8px 18px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(212, 175, 55, 0.2);
+}
+
+.btn-view-photo-full:hover {
+  background: var(--gold-gradient);
+  color: #2b180a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+}
+
+/* Trạng thái trống (khi chưa có thư nào) */
+.empty-letters-box {
+  text-align: center;
+  padding: 60px 20px;
+  color: #f7ede0;
+}
+
+.empty-icon {
+  font-size: 3.5rem;
+  color: var(--primary-gold);
+  margin-bottom: 12px;
+}
+
+.empty-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+
+.empty-desc {
+  font-size: 0.95rem;
+  color: #cbbba8;
+}
+
+/* Responsive cho trang đọc thư */
+@media (max-width: 768px) {
+  .reading-body-layout {
+    flex-direction: column-reverse;
+    align-items: center;
+    padding: 20px 16px;
+    gap: 24px;
+  }
+  .reading-photo-side-box {
+    width: 100%;
+    max-width: 280px;
+  }
+  .reading-letter-content {
+    font-size: 1.25rem;
+  }
+  .mailbox-center-toolbar {
+    padding: 8px 16px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+  }
+  .letters-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
+  .envelope-card {
+    padding: 12px 10px 10px;
+  }
+  .envelope-visual-box {
+    height: 110px;
+  }
+  .envelope-action-text {
+    font-size: 0.78rem;
+  }
+  .mini-player {
+    top: 10px;
+    right: 10px;
+    max-width: 220px;
+    padding: 6px 10px;
+  }
+  .mini-title {
+    max-width: 100px;
+  }
+  .turntable-body {
+    width: 280px;
+    height: 280px;
+  }
+  .turntable-platter {
+    width: 220px;
+    height: 220px;
+  }
+  .vinyl-disc {
+    width: 200px;
+    height: 200px;
+  }
+  .tonearm-wrapper {
+    width: 70px;
+    height: 200px;
+  }
+}
+

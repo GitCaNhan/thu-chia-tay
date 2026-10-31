@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Hòm Thư Tri Ân – Kính Dâng Cha Phụ Tá Thái</title>
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/receive.css">
+</head>
+<body>
+  <!-- Lớp phủ dịu nền -->
+  <div class="bg-overlay"></div>
+
+  <!-- Audio nhạc nền -->
+  <audio id="bgAudio" loop preload="auto">
+    <source src="assets/audio/chinh_chua_chon_con.mp3" type="audio/mpeg">
+    <source src="assets/audio/chinh_chua_chon_con.m4a" type="audio/mp4">
+  </audio>
+
+  <!-- Container hiệu ứng Mưa Sticker (Không xoay sticker) -->
+  <div id="stickerRainContainer"></div>
+
+  <!-- 1. MÀN HÌNH KHỞI ĐẦU: ĐĨA PHÁT NHẠC ĐĨA THAN CỔ ĐIỂN -->
+  <div id="introTurntableOverlay" class="intro-turntable-overlay">
+    <div class="turntable-intro-box">
+      <!-- Máy đĩa than cổ điển -->
+      <div id="turntableBody" class="turntable-body" title="Chạm để phát nhạc" style="cursor: pointer;">
+        <div class="turntable-platter">
+          <!-- Đĩa than -->
+          <div id="vinylDisc" class="vinyl-disc"></div>
+        </div>
+
+        <!-- Cần gạt kim phát nhạc -->
+        <div class="tonearm-wrapper">
+          <img 
+            id="tonearmImg" 
+            src="assets/images/tonearm.png" 
+            alt="Cần gạt đĩa than" 
+            class="tonearm-img" 
+          />
+        </div>
+      </div>
+
+      <!-- Dấu chạy nhạc (Nút phát nhạc ▶) -->
+      <button type="button" id="btnStartTurntable" class="btn-play-turntable-circle" title="Phát nhạc" aria-label="Phát nhạc">
+        <span class="play-icon-triangle">▶</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. MINI AUDIO PLAYER THU NHỎ Ở GÓC TRÊN BÊN PHẢI -->
+  <aside id="miniPlayer" class="mini-player" style="display: none;" title="Chạm để tạm dừng/tiếp tục nhạc">
+    <div id="miniVinyl" class="mini-vinyl"></div>
+    <div class="mini-info">
+      <div class="mini-title">Chính Chúa Chọn Con</div>
+      <div id="miniStatusText" class="mini-status">Đang phát 🎵</div>
+    </div>
+    <div class="mini-controls">
+      <button type="button" id="btnMiniToggle" class="btn-mini-toggle">
+        <span id="miniIcon">⏸</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- 3. GIAO DIỆN CHÍNH: DANH SÁCH THƯ TRI ÂN -->
+  <div class="main-wrapper">
+    <header class="header-box">
+      <div class="holy-cross">✝</div>
+      <h1 class="header-title">HÒM THƯ</h1>
+    </header>
+
+    <main class="letters-dashboard">
+      <!-- Thanh số lượng thư (Đã bỏ lọc & tìm kiếm) -->
+      <div class="dashboard-toolbar mailbox-center-toolbar">
+        <div class="letter-counter-box">
+          <span>Tổng số thư trong hòm:</span>
+          <span id="letterCounter" class="counter-num">0</span>
+          <span>bức thư</span>
+        </div>
+      </div>
+
+      <!-- Danh sách phong thư (Sắp xếp: Gửi trước hiện trước, gửi sau hiện sau) -->
+      <div id="lettersGrid" class="letters-grid">
+        <!-- JS render các phong bì thư -->
+      </div>
+    </main>
+  </div>
+
+  <!-- 4. MODAL ĐỌC THƯ: FONT CHỮ VIẾT HOA CÁCH ĐIỆU & ẢNH KÈM KHUNG -->
+  <div id="letterReadingModal" class="letter-reading-modal">
+    <article class="reading-sheet">
+      <!-- Đầu bức thư -->
+      <header class="reading-header">
+        <div class="reading-sender-meta">
+          <div id="readingSaintName" class="reading-saint-name">Tên Thánh: Giuse</div>
+          <h2 id="readingFullName" class="reading-full-name">Họ và Tên</h2>
+          <div id="readingParishTag" class="reading-parish-tag">⛪ Gx Yên thịnh</div>
+        </div>
+
+        <!-- NÚT THOÁT CHUYỂN RA NGOÀI DANH SÁCH -->
+        <button type="button" id="btnExitLetter" class="btn-exit-letter">
+          <span>✕</span> Thoát & Đóng thư
+        </button>
+      </header>
+
+      <!-- Nội dung bức thư & Ảnh kèm khung -->
+      <div class="reading-body-layout">
+        <!-- Cột Bức thư: Font chữ viết hoa cách điệu -->
+        <div class="reading-letter-text-box">
+          <div class="reading-salutation">Kính gửi Cha Phụ tá Thái thân yêu,</div>
+          <div id="readingLetterContent" class="reading-letter-content">
+            <!-- Nội dung thư hiển thị tại đây -->
+          </div>
+          <div id="readingDateSignature" class="reading-date-signature">
+            <!-- Ngày giờ gửi -->
+          </div>
+        </div>
+
+        <!-- Cột Cạnh bức thư: Ảnh kèm khung -->
+        <div id="readingPhotoSideBox" class="reading-photo-side-box">
+          <div id="readingPhotoWrapper" class="framed-photo-wrapper" title="Bấm để xem ảnh lớn">
+            <img 
+              id="readingPhotoImg" 
+              src="" 
+              alt="Ảnh kỷ niệm kèm khung" 
+              class="framed-photo-img" 
+            />
+          </div>
+
+          <!-- Dòng chữ/nút yêu cầu: Nhấn để xem ảnh -->
+          <button type="button" id="btnViewPhotoFull" class="btn-view-photo-full">
+            <span>🔍</span> Nhấn để xem ảnh
+          </button>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <!-- 5. LIGHTBOX MODAL ĐỂ XEM ẢNH KÍCH THƯỚC LỚN TOÀN MÀN HÌNH -->
+  <div id="lightboxModal" class="lightbox-modal">
+    <div class="lightbox-content">
+      <button type="button" id="lightboxCloseBtn" class="lightbox-close-btn">✕</button>
+      <img id="lightboxImg" src="" alt="Ảnh phóng to" class="lightbox-img" />
+    </div>
+  </div>
+
+  <!-- Firebase SDK (Compat v10) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <!-- Application Scripts -->
+  <script src="config.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/receive.js"></script>
+</body>
+</html>
+
