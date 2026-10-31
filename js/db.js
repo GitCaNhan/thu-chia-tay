@@ -78,6 +78,34 @@ const DB_SERVICE = {
     return id;
   },
 
+  // Xóa một bức thư theo ID
+  async deleteLetter(id) {
+    if (this.isFirebaseActive && this.firestore) {
+      try {
+        await this.firestore.collection("letters").doc(id).delete();
+        this.removeFromLocalList(id);
+        return { success: true };
+      } catch (err) {
+        console.error("Lỗi xóa thư trên Firebase:", err);
+        return { success: false, error: err.message };
+      }
+    } else {
+      this.removeFromLocalList(id);
+      return { success: true };
+    }
+  },
+
+  removeFromLocalList(id) {
+    let letters = this.getLocalStorageLetters();
+    letters = letters.filter(l => l.id !== id);
+    localStorage.setItem("cta_cha_thai_letters", JSON.stringify(letters));
+
+    // Xóa cả trong danh sách đã mở nếu có
+    let opened = this.getOpenedLetterIds();
+    opened = opened.filter(oId => oId !== id);
+    localStorage.setItem("cta_opened_letters", JSON.stringify(opened));
+  },
+
   getLocalStorageLetters() {
     try {
       const data = localStorage.getItem("cta_cha_thai_letters");

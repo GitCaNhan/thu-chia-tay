@@ -40,6 +40,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const loadingOverlay = document.getElementById('loadingOverlay');
   const successModal = document.getElementById('successModal');
   const btnWriteAnother = document.getElementById('btnWriteAnother');
+  const btnDeleteJustSent = document.getElementById('btnDeleteJustSent');
+  let lastSavedLetterId = null;
 
   // 3. Khởi tạo danh sách Giáo họ / Giáo xứ
   const parishOptions = window.PARISH_OPTIONS || [
@@ -352,6 +354,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       loadingOverlay.classList.remove('active');
 
       if (res && res.success) {
+        lastSavedLetterId = res.id;
         successModal.classList.add('active');
       } else {
         showToast("Có lỗi xảy ra khi lưu thư, vui lòng thử lại!");
@@ -363,10 +366,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  // Xóa bức thư vừa gửi nếu gửi nhầm
+  if (btnDeleteJustSent) {
+    btnDeleteJustSent.addEventListener('click', async () => {
+      if (!lastSavedLetterId) return;
+      if (confirm("Bạn có chắc chắn muốn xóa bức thư vừa gửi không?")) {
+        loadingOverlay.classList.add('active');
+        await window.DB_SERVICE.deleteLetter(lastSavedLetterId);
+        loadingOverlay.classList.remove('active');
+        lastSavedLetterId = null;
+        successModal.classList.remove('active');
+        showToast("Đã xóa bức thư vừa gửi thành công!");
+      }
+    });
+  }
+
   // Viết thư khác
   btnWriteAnother.addEventListener('click', () => {
     form.reset();
     userImg = null;
+    lastSavedLetterId = null;
     canvasControls.style.display = 'none';
     canvasHint.style.display = 'none';
     otherParishGroup.style.display = 'none';

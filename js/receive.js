@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Reading Modal
   const letterReadingModal = document.getElementById('letterReadingModal');
   const btnExitLetter = document.getElementById('btnExitLetter');
+  const btnDeleteCurrentLetter = document.getElementById('btnDeleteCurrentLetter');
   const readingSaintName = document.getElementById('readingSaintName');
   const readingFullName = document.getElementById('readingFullName');
   const readingParishTag = document.getElementById('readingParishTag');
@@ -356,6 +357,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   btnExitLetter.addEventListener('click', () => {
     closeReadingModal();
   });
+
+  // NÚT XÓA THƯ HIỆN TẠI (DÀNH CHO QUẢN TRỊ / CHA)
+  if (btnDeleteCurrentLetter) {
+    btnDeleteCurrentLetter.addEventListener('click', async () => {
+      if (!currentReadingLetter || !currentReadingLetter.id) return;
+      if (confirm(`Bạn có chắc chắn muốn xóa bức thư này của "${currentReadingLetter.fullName || 'người gửi'}" không?`)) {
+        const idToDelete = currentReadingLetter.id;
+        letterReadingModal.classList.remove('active');
+        currentReadingLetter = null;
+        
+        await window.DB_SERVICE.deleteLetter(idToDelete);
+        // Nếu dùng local, cập nhật lại danh sách ngay
+        if (!window.DB_SERVICE.isFirebaseActive) {
+          allLetters = allLetters.filter(l => l.id !== idToDelete);
+          renderLetterList();
+        }
+      }
+    });
+  }
 
   function closeReadingModal() {
     if (currentReadingLetter && currentReadingLetter.id) {

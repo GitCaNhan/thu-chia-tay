@@ -99,10 +99,16 @@
           <div id="readingParishTag" class="reading-parish-tag">⛪ Gx Yên thịnh</div>
         </div>
 
-        <!-- NÚT THOÁT CHUYỂN RA NGOÀI DANH SÁCH -->
-        <button type="button" id="btnExitLetter" class="btn-exit-letter">
-          <span>✕</span> Thoát & Đóng thư
-        </button>
+        <div class="reading-header-actions" style="display: flex; gap: 10px; align-items: center;">
+          <!-- Nút xóa bức thư này -->
+          <button type="button" id="btnDeleteCurrentLetter" class="btn-delete-letter" title="Xóa bức thư này">
+            <span>🗑️</span> Xóa thư
+          </button>
+          <!-- NÚT THOÁT CHUYỂN RA NGOÀI DANH SÁCH -->
+          <button type="button" id="btnExitLetter" class="btn-exit-letter">
+            <span>✕</span> Thoát & Đóng thư
+          </button>
+        </div>
       </header>
 
       <!-- Nội dung bức thư & Ảnh kèm khung -->

@@ -572,6 +572,29 @@
   transform: translateY(-1px);
 }
 
+/* NÚT XÓA THƯ */
+.btn-delete-letter {
+  background: rgba(192, 57, 43, 0.12);
+  color: #c0392b;
+  border: 1px solid rgba(192, 57, 43, 0.4);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-delete-letter:hover {
+  background: #c0392b;
+  color: #fff;
+  border-color: #c0392b;
+  transform: translateY(-1px);
+}
+
 /* Thân nội dung bức thư (Bao gồm Bức thư & Ảnh kèm khung bên cạnh) */
 .reading-body-layout {
   padding: 28px 32px;

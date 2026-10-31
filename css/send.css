@@ -162,6 +162,22 @@
   transform: translateY(-1px);
 }
 
+.btn-delete-sent {
+  background: rgba(192, 57, 43, 0.15);
+  color: #c0392b;
+  border: 1.5px solid #c0392b;
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-delete-sent:hover {
+  background: #c0392b;
+  color: #fff;
+}
+
 .btn-photo-action.active {
   background: var(--gold-gradient);
   color: #2b180a;
