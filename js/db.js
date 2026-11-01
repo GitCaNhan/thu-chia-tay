@@ -17,15 +17,30 @@ const DB_SERVICE = {
                         supa.url !== "YOUR_SUPABASE_URL" && 
                         !supa.url.includes("YOUR_");
 
-    if (isSupaValid && typeof window.supabase !== 'undefined') {
-      try {
-        const cleanUrl = supa.url.replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
-        this.supabaseClient = window.supabase.createClient(cleanUrl, supa.anonKey);
-        this.activeBackend = 'supabase';
-        console.log("✅ Đã kết nối thành công với Supabase Cloud Database!");
-        return;
-      } catch (err) {
-        console.warn("⚠️ Không thể kết nối Supabase, thử fallback:", err);
+    if (isSupaValid) {
+      // Đợi tối đa 2.5 giây nếu thư viện Supabase JS từ CDN đang tải về
+      let supaLib = (typeof window !== 'undefined' && window.supabase) || (typeof supabase !== 'undefined' ? supabase : null);
+      if (!supaLib || !supaLib.createClient) {
+        for (let i = 0; i < 25; i++) {
+          await new Promise(res => setTimeout(res, 100));
+          supaLib = (typeof window !== 'undefined' && window.supabase) || (typeof supabase !== 'undefined' ? supabase : null);
+          if (supaLib && supaLib.createClient) break;
+        }
+      }
+
+      if (supaLib && supaLib.createClient) {
+        try {
+          const cleanUrl = supa.url.replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
+          this.supabaseClient = supaLib.createClient(cleanUrl, supa.anonKey);
+          this.activeBackend = 'supabase';
+          console.log("✅ Đã kết nối thành công với Supabase Cloud Database:", cleanUrl);
+
+          // Tự động đẩy các bức thư đã viết trước đó trên thiết bị này lên Supabase
+          await this.syncLocalLettersToSupabase();
+          return;
+        } catch (err) {
+          console.warn("⚠️ Không thể kết nối Supabase, thử fallback:", err);
+        }
       }
     }
 
@@ -60,6 +75,84 @@ const DB_SERVICE = {
     const existing = localStorage.getItem("cta_cha_thai_letters");
     if (!existing) {
       localStorage.setItem("cta_cha_thai_letters", JSON.stringify([]));
+    }
+  },
+
+  // Tự động đồng bộ các thư đã viết trong chế độ Demo (LocalStorage) lên Supabase
+  async syncLocalLettersToSupabase() {
+    if (this.activeBackend !== 'supabase' || !this.supabaseClient) return;
+
+    try {
+      const localLetters = this.getLocalStorageLetters();
+      const mySent = this.getMySentLetters();
+
+      // Thu thập tất cả thư được tạo trước đó trên máy này (bắt đầu bằng 'local-')
+      const letterMap = new Map();
+      [...localLetters, ...mySent].forEach(l => {
+        if (l && l.id && String(l.id).startsWith('local-')) {
+          letterMap.set(String(l.id), l);
+        }
+      });
+
+      const lettersToSync = Array.from(letterMap.values());
+      if (lettersToSync.length === 0) return;
+
+      console.log(`Đang tự động đồng bộ ${lettersToSync.length} bức thư đã viết trước đó lên Supabase...`);
+
+      for (const letter of lettersToSync) {
+        const record = {
+          saintName: (letter.saintName || "").trim(),
+          fullName: (letter.fullName || "").trim(),
+          parish: (letter.parish || "").trim(),
+          otherParish: (letter.otherParish || "").trim(),
+          content: (letter.content || "").trim(),
+          photoData: letter.photoData || "",
+          createdAt: letter.createdAt || new Date().toISOString()
+        };
+
+        // Bỏ qua nếu là bản ghi rỗng
+        if (!record.fullName && !record.content) continue;
+
+        let res = await this.supabaseClient.from('letters').insert([{
+          saintName: record.saintName,
+          fullName: record.fullName,
+          parish: record.parish,
+          otherParish: record.otherParish,
+          content: record.content,
+          photoData: record.photoData,
+          createdAt: record.createdAt
+        }]).select();
+
+        if (res.error) {
+          res = await this.supabaseClient.from('letters').insert([{
+            saint_name: record.saintName,
+            full_name: record.fullName,
+            parish: record.parish,
+            other_parish: record.otherParish,
+            content: record.content,
+            photo_data: record.photoData,
+            created_at: record.createdAt
+          }]).select();
+        }
+
+        if (!res.error && res.data && res.data[0]) {
+          const newId = String(res.data[0].id);
+          const oldId = letter.id;
+
+          // Cập nhật lại ID mới trong local storage để không gửi trùng lặp
+          const mySentItem = mySent.find(s => s && s.id === oldId);
+          if (mySentItem) mySentItem.id = newId;
+
+          const localItem = localLetters.find(l => l && l.id === oldId);
+          if (localItem) localItem.id = newId;
+        }
+      }
+
+      localStorage.setItem("cta_cha_thai_letters", JSON.stringify(localLetters));
+      localStorage.setItem("cta_my_sent_letters", JSON.stringify(mySent));
+      console.log("✅ Đã đồng bộ thành công các thư đã viết lên Supabase!");
+    } catch (e) {
+      console.warn("Lỗi tự động đồng bộ thư cũ lên Supabase:", e);
     }
   },
 
@@ -136,11 +229,14 @@ const DB_SERVICE = {
 
     if (this.activeBackend === 'supabase' && this.supabaseClient) {
       try {
-        await this.supabaseClient.from('letters').delete().eq('id', id);
+        if (!String(id).startsWith('local-')) {
+          await this.supabaseClient.from('letters').delete().eq('id', id);
+        }
         this.removeFromLocalList(id);
         return { success: true };
       } catch (err) {
         console.error("Lỗi xóa thư trên Supabase:", err);
+        this.removeFromLocalList(id);
         return { success: false, error: err.message };
       }
     } else if (this.activeBackend === 'firebase' && this.firestore) {
